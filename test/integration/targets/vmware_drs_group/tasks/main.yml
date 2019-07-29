@@ -7,7 +7,31 @@
   vars:
     setup_attach_host: true
     setup_datastore: true
-    setup_virtualmachines: true
+
+- name: Create VMs
+  vmware_guest:
+    hostname: "{{ vcenter_hostname }}"
+    username: "{{ vcenter_username }}"
+    password: "{{ vcenter_password }}"
+    datacenter: "{{ dc1 }}"
+    validate_certs: no
+    folder: '{{ f0 }}'
+    name: test_vm1
+    state: poweredoff
+    guest_id: debian8_64Guest
+    disk:
+    - size_gb: 1
+      type: thin
+      datastore: '{{ ds2 }}'
+    hardware:
+      memory_mb: 128
+      num_cpus: 1
+      scsi: paravirtual
+    cdrom:
+      type: iso
+      iso_path: "[{{ ds1 }}] fedora.iso"
+    networks:
+    - name: VM Network
 
 - name: Create DRS VM group
   vmware_drs_group:
@@ -19,9 +43,7 @@
     cluster_name: '{{ ccr1 }}'
     datacenter_name: '{{ dc1 }}'
     group_name: TEST_VM_01
-    vms:
-      - DC0_C0_RP0_VM0
-      - DC0_C0_RP0_VM1
+    vms: "{{ virtual_machines_in_cluster | map(attribute='name') | list }}"
     state: present
   register: drs_vm_group_01_results
 
@@ -32,7 +54,7 @@
     that:
       - "drs_vm_group_01_results.changed"
 
-- when: vcsim is defined or groups['esxi-lab'] | length >= 3
+- when: vcsim is defined or esxi_hosts | length >= 3
   block:
   - name: Create DRS Host group
     vmware_drs_group:
@@ -43,7 +65,7 @@
       cluster_name: '{{ ccr1 }}'
       datacenter_name: '{{ dc1 }}'
       group_name: TEST_HOST_01
-      hosts: "{{ groups['esxi-lab'][0:3] }}"
+      hosts: "{{ esxi_hosts[0:3] }}"
       state: present
     register: drs_host_group_01_results
 

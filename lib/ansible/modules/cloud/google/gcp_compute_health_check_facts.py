@@ -42,7 +42,7 @@ requirements:
 options:
   filters:
     description:
-    - A list of filter value pairs. Available filters are listed here U(https://cloud.google.com/sdk/gcloud/reference/topic/filters.)
+    - A list of filter value pairs. Available filters are listed here U(https://cloud.google.com/sdk/gcloud/reference/topic/filters).
     - Each additional filter in the list will act be added as an AND condition (filter1
       and filter2) .
 extends_documentation_fragment: gcp
@@ -60,8 +60,8 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-items:
-  description: List of items
+resources:
+  description: List of resources
   returned: always
   type: complex
   contains:
@@ -167,6 +167,20 @@ items:
             backend, either NONE or PROXY_V1. The default is NONE.
           returned: success
           type: str
+        portSpecification:
+          description:
+          - 'Specifies how port is selected for health checking, can be one of the
+            following values: * `USE_FIXED_PORT`: The port number in `port` is used
+            for health checking.'
+          - "* `USE_NAMED_PORT`: The `portName` is used for health checking."
+          - "* `USE_SERVING_PORT`: For NetworkEndpointGroup, the port specified for
+            each network endpoint is used for health checking. For other backends,
+            the port or named port specified in the Backend Service is used for health
+            checking."
+          - If not specified, HTTP health check follows behavior specified in `port`
+            and `portName` fields.
+          returned: success
+          type: str
     httpsHealthCheck:
       description:
       - A nested object resource.
@@ -211,6 +225,20 @@ items:
             backend, either NONE or PROXY_V1. The default is NONE.
           returned: success
           type: str
+        portSpecification:
+          description:
+          - 'Specifies how port is selected for health checking, can be one of the
+            following values: * `USE_FIXED_PORT`: The port number in `port` is used
+            for health checking.'
+          - "* `USE_NAMED_PORT`: The `portName` is used for health checking."
+          - "* `USE_SERVING_PORT`: For NetworkEndpointGroup, the port specified for
+            each network endpoint is used for health checking. For other backends,
+            the port or named port specified in the Backend Service is used for health
+            checking."
+          - If not specified, HTTPS health check follows behavior specified in `port`
+            and `portName` fields.
+          returned: success
+          type: str
     tcpHealthCheck:
       description:
       - A nested object resource.
@@ -248,6 +276,20 @@ items:
           description:
           - Specifies the type of proxy header to append before sending data to the
             backend, either NONE or PROXY_V1. The default is NONE.
+          returned: success
+          type: str
+        portSpecification:
+          description:
+          - 'Specifies how port is selected for health checking, can be one of the
+            following values: * `USE_FIXED_PORT`: The port number in `port` is used
+            for health checking.'
+          - "* `USE_NAMED_PORT`: The `portName` is used for health checking."
+          - "* `USE_SERVING_PORT`: For NetworkEndpointGroup, the port specified for
+            each network endpoint is used for health checking. For other backends,
+            the port or named port specified in the Backend Service is used for health
+            checking."
+          - If not specified, TCP health check follows behavior specified in `port`
+            and `portName` fields.
           returned: success
           type: str
     sslHealthCheck:
@@ -289,6 +331,20 @@ items:
             backend, either NONE or PROXY_V1. The default is NONE.
           returned: success
           type: str
+        portSpecification:
+          description:
+          - 'Specifies how port is selected for health checking, can be one of the
+            following values: * `USE_FIXED_PORT`: The port number in `port` is used
+            for health checking.'
+          - "* `USE_NAMED_PORT`: The `portName` is used for health checking."
+          - "* `USE_SERVING_PORT`: For NetworkEndpointGroup, the port specified for
+            each network endpoint is used for health checking. For other backends,
+            the port or named port specified in the Backend Service is used for health
+            checking."
+          - If not specified, SSL health check follows behavior specified in `port`
+            and `portName` fields.
+          returned: success
+          type: str
 '''
 
 ################################################################################
@@ -313,7 +369,7 @@ def main():
         items = items.get('items')
     else:
         items = []
-    return_value = {'items': items}
+    return_value = {'resources': items}
     module.exit_json(**return_value)
 
 

@@ -49,6 +49,7 @@ options:
       to a gcp_sql_instance task and then set this instance field to "{{ name-of-resource
       }}"'
     required: true
+    type: dict
 extends_documentation_fragment: gcp
 '''
 
@@ -63,8 +64,8 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-items:
-  description: List of items
+resources:
+  description: List of resources
   returned: always
   type: complex
   contains:
@@ -114,7 +115,7 @@ def main():
         items = items.get('items')
     else:
         items = []
-    return_value = {'items': items}
+    return_value = {'resources': items}
     module.exit_json(**return_value)
 
 

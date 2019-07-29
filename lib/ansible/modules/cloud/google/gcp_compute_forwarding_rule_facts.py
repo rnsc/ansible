@@ -42,7 +42,7 @@ requirements:
 options:
   filters:
     description:
-    - A list of filter value pairs. Available filters are listed here U(https://cloud.google.com/sdk/gcloud/reference/topic/filters.)
+    - A list of filter value pairs. Available filters are listed here U(https://cloud.google.com/sdk/gcloud/reference/topic/filters).
     - Each additional filter in the list will act be added as an AND condition (filter1
       and filter2) .
   region:
@@ -50,6 +50,7 @@ options:
     - A reference to the region where the regional forwarding rule resides.
     - This field is not applicable to global forwarding rules.
     required: true
+    type: str
 extends_documentation_fragment: gcp
 '''
 
@@ -66,8 +67,8 @@ EXAMPLES = '''
 '''
 
 RETURN = '''
-items:
-  description: List of items
+resources:
+  description: List of resources
   returned: always
   type: complex
   contains:
@@ -259,7 +260,7 @@ def main():
         items = items.get('items')
     else:
         items = []
-    return_value = {'items': items}
+    return_value = {'resources': items}
     module.exit_json(**return_value)
 
 

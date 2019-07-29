@@ -53,34 +53,26 @@ options:
     default: present
   name:
     description:
-    - For example, U(www.example.com.)
+    - For example, U(www.example.com).
     required: true
+    type: str
   type:
     description:
     - One of valid DNS resource types.
+    - 'Some valid choices include: "A", "AAAA", "CAA", "CNAME", "MX", "NAPTR", "NS",
+      "PTR", "SOA", "SPF", "SRV", "TLSA", "TXT"'
     required: true
-    choices:
-    - A
-    - AAAA
-    - CAA
-    - CNAME
-    - MX
-    - NAPTR
-    - NS
-    - PTR
-    - SOA
-    - SPF
-    - SRV
-    - TLSA
-    - TXT
+    type: str
   ttl:
     description:
     - Number of seconds that this ResourceRecordSet can be cached by resolvers.
     required: false
+    type: int
   target:
     description:
     - As defined in RFC 1035 (section 5) and RFC 1034 (section 3.6.1) .
     required: false
+    type: list
   managed_zone:
     description:
     - Identifies the managed zone addressed by this request.
@@ -90,6 +82,7 @@ options:
       to a gcp_dns_managed_zone task and then set this managed_zone field to "{{ name-of-resource
       }}"'
     required: true
+    type: dict
 extends_documentation_fragment: gcp
 '''
 
@@ -123,7 +116,7 @@ EXAMPLES = '''
 RETURN = '''
 name:
   description:
-  - For example, U(www.example.com.)
+  - For example, U(www.example.com).
   returned: success
   type: str
 type:
@@ -170,7 +163,7 @@ def main():
         argument_spec=dict(
             state=dict(default='present', choices=['present', 'absent'], type='str'),
             name=dict(required=True, type='str'),
-            type=dict(required=True, type='str', choices=['A', 'AAAA', 'CAA', 'CNAME', 'MX', 'NAPTR', 'NS', 'PTR', 'SOA', 'SPF', 'SRV', 'TLSA', 'TXT']),
+            type=dict(required=True, type='str'),
             ttl=dict(type='int'),
             target=dict(type='list', elements='str'),
             managed_zone=dict(required=True, type='dict'),

@@ -15,20 +15,22 @@ import sys
 
 from abc import ABCMeta, abstractmethod
 
+from ansible.cli.arguments import option_helpers as opt_help
 from ansible import constants as C
 from ansible import context
-from ansible.cli.arguments import option_helpers as opt_help
 from ansible.errors import AnsibleError
 from ansible.inventory.manager import InventoryManager
 from ansible.module_utils.six import with_metaclass, string_types
 from ansible.module_utils._text import to_bytes, to_text
 from ansible.parsing.dataloader import DataLoader
-from ansible.release import __version__
-from ansible.utils.display import Display
-from ansible.utils.path import unfrackpath
-from ansible.vars.manager import VariableManager
 from ansible.parsing.vault import PromptVaultSecret, get_file_vault_secret
 from ansible.plugins.loader import add_all_plugin_dirs
+from ansible.release import __version__
+from ansible.utils.collection_loader import set_collection_playbook_paths
+from ansible.utils.display import Display
+from ansible.utils.path import unfrackpath
+from ansible.utils.unsafe_proxy import AnsibleUnsafeBytes
+from ansible.vars.manager import VariableManager
 
 try:
     import argcomplete
@@ -252,6 +254,13 @@ class CLI(with_metaclass(ABCMeta, object)):
         except EOFError:
             pass
 
+        # we 'wrap' the passwords to prevent templating as
+        # they can contain special chars and trigger it incorrectly
+        if sshpass:
+            sshpass = AnsibleUnsafeBytes(sshpass)
+        if becomepass:
+            becomepass = AnsibleUnsafeBytes(becomepass)
+
         return (sshpass, becomepass)
 
     def validate_conflicts(self, op, runas_opts=False, fork_opts=False):
@@ -433,6 +442,7 @@ class CLI(with_metaclass(ABCMeta, object)):
         if basedir:
             loader.set_basedir(basedir)
             add_all_plugin_dirs(basedir)
+            set_collection_playbook_paths(basedir)
 
         vault_ids = list(options['vault_ids'])
         default_vault_ids = C.DEFAULT_VAULT_IDENTITY_LIST
